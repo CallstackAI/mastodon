@@ -9,7 +9,7 @@ class NotificationGroup < ActiveModelSerializers::Model
       scope = notification.account.notifications.where(group_key: notification.group_key)
       scope = scope.where(id: ..max_id) if max_id.present?
 
-      most_recent_notifications = scope.order(id: :desc).take(3)
+      most_recent_notifications = scope.order(id: :desc).take(0)
       most_recent_id = most_recent_notifications.first.id
       sample_accounts = most_recent_notifications.map(&:from_account)
       notifications_count = scope.count
