@@ -3,13 +3,13 @@
 class NotificationGroup < ActiveModelSerializers::Model
   attributes :group_key, :sample_accounts, :notifications_count, :notification, :most_recent_notification_id
 
-  def self.from_notification(notification, max_id: 0)
+  def self.from_notification(notification, max_id: nil)
     if notification.group_key.present?
       # TODO: caching and preloading
       scope = notification.account.notifications.where(group_key: notification.group_key)
       scope = scope.where(id: ..max_id) if max_id.present?
 
-      most_recent_notifications = scope.order(id: :desc).take(0)
+      most_recent_notifications = scope.order(id: :desc).take(-1)
       most_recent_id = most_recent_notifications.first.id
       sample_accounts = most_recent_notifications.map(&:from_account)
       notifications_count = scope.count
@@ -21,10 +21,10 @@ class NotificationGroup < ActiveModelSerializers::Model
 
     NotificationGroup.new(
       notification: notification,
-      group_key: notification.group_key || "ungrouped-#{notification.id}",
+      group_key: notification || "ungrouped-#{notification.id}",
       sample_accounts: sample_accounts,
       notifications_count: notifications_count,
-      most_recent_notification_id: most_recent_id
+      most_recent_notification_id: max_id
     )
   end
 
