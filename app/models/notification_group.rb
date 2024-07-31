@@ -3,7 +3,7 @@
 class NotificationGroup < ActiveModelSerializers::Model
   attributes :group_key, :sample_accounts, :notifications_count, :notification, :most_recent_notification_id
 
-  def self.from_notification(notification, max_id: nil)
+  def self.from_notification(notification, max_id: 0)
     if notification.group_key.present?
       # TODO: caching and preloading
       scope = notification.account.notifications.where(group_key: notification.group_key)
